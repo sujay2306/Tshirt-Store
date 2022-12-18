@@ -1,5 +1,6 @@
-const mongoose = require('mongoose')
-const validator = require('validator')
+const mongoose = require('mongoose');
+const validator = require('validator');
+const becypt = require('bcryptjs');
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -39,10 +40,25 @@ const userSchema = new mongoose.Schema({
         default: Date.now
 
     }
+});
 
+
+//Encrypt password before saving using "pre-Hook"
+// but the challange is when ever we modify any other field this pre-hook will be executed for that repeatedly
+//we will be using isModified()
+// https://stackoverflow.com/questions/40161459/user-ismodified-is-not-a-function-when-doing-a-pre-update-in-mongoose
+
+userSchema.pre("save", async function(next){
+    if(!this.isModified("password")){
+        return next();
+    }
+    this.password = await becypt.hash(this.password, 10);
 })
 
-
+//Validate the password with passedon user password 
+userSchema.methods.IsvalidatedPassword = async function(userPassword){ 
+    return await bcrypt.compare(userPassword, this.password) //this is a true or false event
+}
 
 // #convert schema to model
-module.exports = mongoose.model("User", userSchema)
+module.exports = mongoose.model("User", userSchema);
