@@ -5,4 +5,6 @@ const {signUp } = require ("../controllers/userController")
 
 router.route("/signup").get(signUp)
 
+
 module.exports = router;
+
