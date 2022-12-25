@@ -7,21 +7,23 @@ const cloudinary = require("cloudinary")
 //Signup
 exports.signUp = BigPromise(async (req, res, next ) => {
         // image upload
-    let result
-    if(req.files){
-        let files = req.files.photo
-        result = await cloudinary.v2.uploader.upload(files.tempFilePath, { //use tempfile or else error
-            folder: "users",
-            width: 150,
-            crop: "scale",
-        })
+    if(!req.files){
+        return next(new CustomError("photo is required for signup", 400));
     }
-    //username and password
+        //username and password
     const {name, email, password} = req.body;
-
     if (!email || !name || !password){
         return next(new CustomError("name, mail and password are required", 400));
     }
+    
+    let files = req.files.photo
+    const result = await cloudinary.v2.uploader.upload(files.tempFilePath, { //use tempfile or else error
+            folder: "users",
+            width: 150,
+            crop: "scale",
+     })
+    
+
     //create user in DB
    const user = await User.create({
         name,
