@@ -10,10 +10,10 @@ exports.signUp = BigPromise(async (req, res, next ) => {
     let result
     if(req.files){
         let files = req.files.photo
-        result = await cloudinary.v2.uploader.upload(files, {
-            folder: users,
+        result = await cloudinary.v2.uploader.upload(files.tempFilePath, { //use tempfile or else error
+            folder: "users",
             width: 150,
-            crop: scale,
+            crop: "scale",
         })
     }
     //username and password

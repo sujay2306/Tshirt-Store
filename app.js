@@ -10,6 +10,11 @@ const YAML = require("yamljs");
 const swaggerDocument = YAML.load("./swagger.yaml");
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+
+
+//just a temp check
+app.set("view engine", "ejs")
+
 //regular middleware 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
@@ -36,6 +41,8 @@ app.use('/api/v1', home);
 app.use('/api/v1/', users);
 // app.use = ("/api/v1", user)
 
-
+app.get('/signuptest',(req, res) =>{
+    res.render("signup")
+})
 module.exports = app;
 //export app js 
