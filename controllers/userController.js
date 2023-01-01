@@ -5,6 +5,8 @@ const cookieToken = require("../utils/cookieToken");
 const fileUpload = require("express-fileupload")
 const cloudinary = require("cloudinary");
 const { json } = require("express");
+const user = require("../models/user");
+const mailHelper = require("../utils/emailHelper");
 
 
 //Signup
@@ -81,3 +83,55 @@ exports.logout = BigPromise(async (req, res, next) => {
         message: "Logout success",	
       });	
     });
+
+
+exports.forgotPassword = BigPromise(async (req, res, next) => {
+        // collect email
+    const { email } = req.body;
+      
+        // find user in database
+        const user = await User.findOne({ email });
+      
+        // if user not found in database
+        if (!user) {
+          return next(new CustomError("Email not found as registered", 400));
+        }
+      
+        //get token from user model methods
+        const forgotToken = user.getForgotPasswordToken();
+      
+        // save user fields in DB
+        await user.save({ validateBeforeSave: false });
+      
+        // create a URL
+        const myUrl = `${req.protocol}://${req.get(
+          "host"
+        )}/api/v1/password/reset/${forgotToken}`;
+      
+        // craft a message
+        const message = `Copy paste this link in your URL and hit enter \n\n ${myUrl}`;
+      
+        // attempt to send email
+        try {
+          await mailHelper({
+            email: user.email,
+            subject: "TStore - Password reset email",
+            message,
+          });
+      
+          // json reponse if email is success
+          res.status(200).json({
+            succes: true,
+            message: "Email sent successfully",
+          });
+        } catch (error) {
+        //   reset user fields if things goes wrong
+          user.forgotPasswordToken = undefined;
+          user.forgotPasswordExpiry = undefined;
+          await user.save({ validateBeforeSave: false });
+      
+          // send error response
+          return next(new CustomError(error.message, 500));
+        }
+});
+      
