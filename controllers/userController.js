@@ -7,7 +7,8 @@ const cloudinary = require("cloudinary");
 const { json } = require("express");
 const user = require("../models/user");
 const mailHelper = require("../utils/emailHelper");
-
+const crypto = require("crypto");
+const { use } = require("../routes/users");
 
 //Signup
 exports.signUp = BigPromise(async (req, res, next ) => {
@@ -135,3 +136,47 @@ exports.forgotPassword = BigPromise(async (req, res, next) => {
         }
 });
       
+
+exports.passwordReset = BigPromise(async (req, res, next) => {
+    //get token from params
+    const token = req.params.token;
+  
+    // hash the token as db also stores the hashed version
+    const encryToken = crypto.createHash("sha256").update(token).digest("hex");
+    //user will bve having this password
+    //only care about token wich is is future time
+    const user = await User.findOne({
+        encryToken,
+        forgotPasswordExpiry: { $gt: Date.now() },
+      });
+
+    if (!user) {
+        return next(new CustomError("Token is invalid or expired", 400));
+      }
+    
+
+    if (req.body.password !== req.body.confirmPassword) {
+        return next(
+          new CustomError("password and confirm password do not match", 400)
+        );
+      }
+    
+      // update password field in DB
+      user.password = req.body.password;
+    
+      // reset token fields
+      user.forgotPasswordToken = undefined;
+      user.forgotPasswordExpiry = undefined;
+    
+      // save the user
+      await user.save();
+    
+    //send token or json here i will send token
+    res.status(200).json({
+        succes: true,
+        message: "successfully changed the password"
+    })
+    // cookieToken(user, req);
+
+});
+  
