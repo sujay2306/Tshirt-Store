@@ -179,10 +179,16 @@ exports.getLoggedInUserDetails = BigPromise(async (req, res, next) => {
 })
 
 //update password for a user i.e when you already know the password
-exports.getLoggedInUserDetails = BigPromise(async (req, res, next) => {
-  const user = await User.findById(req.user.id)  //req.user doesnt exists we ahve injected that property
-  res.status(200).json({
-    succes: true,
-    user
-  })
+exports.changePassword = BigPromise(async (req, res, next) => {
+  const userId =  req.user.id;  //req.user doesnt exists we ahve injected that property
+  const user  = await User.findById(userId).select("+password");
+  //old password fopr old we can use mongoogse model "isvalidated" and new password 
+  const isCorrectOldPassword =  await user.isValidatedPassword(req.body.oldPassword);
+
+  if(!isCorrectOldPassword){
+    return next(new CustomError("old password is incorrect", 400))
+  }
+  user.password = req.body.password;
+  await user.save();
+  cookieToken(user, res);
 })
