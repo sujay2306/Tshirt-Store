@@ -83,8 +83,7 @@ exports.logout = BigPromise(async (req, res, next) => {
         succes: true,	
         message: "Logout success",	
       });	
-    });
-
+});
 
 exports.forgotPassword = BigPromise(async (req, res, next) => {
         // collect email
@@ -170,5 +169,20 @@ exports.passwordReset = BigPromise(async (req, res, next) => {
 
 });
 
+//user dashboard
+exports.getLoggedInUserDetails = BigPromise(async (req, res, next) => {
+  const user = await User.findById(req.user.id)  //req.user doesnt exists we ahve injected that property
+  res.status(200).json({
+    succes: true,
+    user
+  })
+})
 
-  
+//update password for a user i.e when you already know the password
+exports.getLoggedInUserDetails = BigPromise(async (req, res, next) => {
+  const user = await User.findById(req.user.id)  //req.user doesnt exists we ahve injected that property
+  res.status(200).json({
+    succes: true,
+    user
+  })
+})
