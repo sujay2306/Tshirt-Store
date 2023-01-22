@@ -62,7 +62,7 @@ const productSchema  = new mongoose.Schema({
     reviews: [{
         user:{
             type: mongoose.Schema.ObjectId,  // user object
-            ref: "User",
+            ref: "User", //coming up from user or product or some sources where obj is coming from 
             required: true
         },
 
@@ -83,7 +83,7 @@ const productSchema  = new mongoose.Schema({
 
     user : {
         type: mongoose.Schema.ObjectId,
-        ref: "User",
+        ref: "User", 
         required: true,
     },
     createdAt : {
