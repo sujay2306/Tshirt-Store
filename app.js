@@ -33,12 +33,13 @@ app.use(morgan("tiny"));
 
 //import all routes here
 const home = require("./routes/home");
-// const User = require("./routes/user")
 const users = require("./routes/users")
+const product = require("./routes/product")
 // mount the specified middleware function(s) at the path which is being specified.
 //this is the router middleware
 app.use('/api/v1', home);
 app.use('/api/v1/', users);
+app.use('/api/v1/', product);
 // app.use = ("/api/v1", user)
 
 app.get('/signuptest',(req, res) =>{
