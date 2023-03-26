@@ -9,7 +9,7 @@ exports.isLoggedIn = BigPromise( async(req, res, next) => {
     const token = req.cookies.token || req.header("Authorzation").replace("Bearer ",""); //space is compulsory after Bearer and replace with nothing this will give us token
    
     if (!token){
-        return next (new CustomError("Login firsdt to access this page", 401));
+        return next (new CustomError("Login first to access this page", 401));
     }
     //decode the token and verify
     const decoded = jwt.verify(token, process.env.JWT_SECRET);

@@ -6,6 +6,7 @@ const productSchema  = new mongoose.Schema({
         trim: true, //used to remove extra space
         maxlength: [120, "should not exceed 120 characters"]
     },
+
     price:{
         type: String,
         required: [true, "provide prouct price"],
@@ -30,14 +31,16 @@ const productSchema  = new mongoose.Schema({
             required: true,
         }
     }],
+
+
     category:{
         type: String,
         required: [true, "provide select category from- short-sleevs, long-sleevs, sweat-shirts, hoodies"],
         enum: {
             values: [
-                "short-sleves",
-                "long-sleevs",
-                "sweat-shirts",
+                "shortsleves",
+                "longsleevs",
+                "sweatshirts",
                 "hoodies"
             ],
             message: "Please provide category ONLY from- short-sleevs, long-sleevs, sweat-shirts and hoodies "
@@ -61,7 +64,7 @@ const productSchema  = new mongoose.Schema({
 
     reviews: [{
         user:{
-            type: mongoose.Schema.ObjectId,  // user object
+            type: mongoose.Schema.ObjectId,  // user object it can come from user so we are using refs
             ref: "User", //coming up from user or product or some sources where obj is coming from 
             required: true
         },
